@@ -1,0 +1,6 @@
+Memoria_Real=4
+Memoria_Virtual=16
+Processos=4
+Tam_Processo=3
+Pagina_Inicial_Real=0
+Pagina_Inicial_Virtual=1000
