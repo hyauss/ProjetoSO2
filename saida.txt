@@ -1,0 +1,97 @@
+EXECUÇÃO
+Estado Inicial da Memória Virtual – PID + PÁGINA + LOCALIZACAO
+--------------- --------------- ---------------
+| P1 -0- 1000 | P1 -1- 1004 | P1 -2- 1008 |
+--------------- --------------- ---------------
+| P2 -0- 1012 | P2 -1- 1016 | P2 -2- 1020 |
+--------------- --------------- ---------------
+| P3 -0- 1024 | P3 -1- 1028 | P3 -2- 1032 |
+--------------- --------------- ---------------
+| P4 -0- 1036 | P4 -1- 1040 | P4 -2- 1044 |
+--------------- --------------- ---------------
+
+Estado Inicial da Memória Real
+Estado da Memória Física:
+| ---- | ---- | ---- | ---- |
+
+Inicial da Execução
+Tempo t=0:
+[PAGE FAULT] Página 0 do Processo 1 não está na memória física
+Carregando Página 0 do Processo 1 no Frame 0
+Estado da Memória Física:
+| P1-0 | ---- | ---- | ---- |
+
+Tempo t=1:
+[PAGE FAULT] Página 1 do Processo 1 não está na memória física
+Carregando Página 1 do Processo 1 no Frame 1
+Estado da Memória Física:
+| P1-0 | P1-1 | ---- | ---- |
+
+Tempo t=2:
+[PAGE FAULT] Página 2 do Processo 1 não está na memória física
+Carregando Página 2 do Processo 1 no Frame 2
+Estado da Memória Física:
+| P1-0 | P1-1 | P1-2 | ---- |
+
+Tempo t=3:
+[PAGE FAULT] Página 0 do Processo 2 não está na memória física
+Carregando Página 0 do Processo 2 no Frame 3
+Estado da Memória Física:
+| P1-0 | P1-1 | P1-2 | P2-0 |
+
+Tempo t=4:
+[PAGE FAULT] Página 1 do Processo 2 não está na memória física
+Substituindo Página 0 do Processo 1 no Frame 0
+Carregando Página 1 do Processo 2 no Frame 0
+Estado da Memória Física:
+| P2-1 | P1-1 | P1-2 | P2-0 |
+
+Tempo t=5:
+[PAGE FAULT] Página 2 do Processo 2 não está na memória física
+Substituindo Página 1 do Processo 1 no Frame 1
+Carregando Página 2 do Processo 2 no Frame 1
+Estado da Memória Física:
+| P2-1 | P2-2 | P1-2 | P2-0 |
+
+Tempo t=6:
+[PAGE FAULT] Página 0 do Processo 3 não está na memória física
+Substituindo Página 2 do Processo 1 no Frame 2
+Carregando Página 0 do Processo 3 no Frame 2
+Estado da Memória Física:
+| P2-1 | P2-2 | P3-0 | P2-0 |
+
+Tempo t=7:
+[PAGE FAULT] Página 1 do Processo 3 não está na memória física
+Substituindo Página 0 do Processo 2 no Frame 3
+Carregando Página 1 do Processo 3 no Frame 3
+Estado da Memória Física:
+| P2-1 | P2-2 | P3-0 | P3-1 |
+
+Tempo t=8:
+[PAGE FAULT] Página 2 do Processo 3 não está na memória física
+Substituindo Página 1 do Processo 2 no Frame 0
+Carregando Página 2 do Processo 3 no Frame 0
+Estado da Memória Física:
+| P3-2 | P2-2 | P3-0 | P3-1 |
+
+Tempo t=9:
+[PAGE FAULT] Página 0 do Processo 4 não está na memória física
+Substituindo Página 2 do Processo 2 no Frame 1
+Carregando Página 0 do Processo 4 no Frame 1
+Estado da Memória Física:
+| P3-2 | P4-0 | P3-0 | P3-1 |
+
+Tempo t=10:
+[PAGE FAULT] Página 1 do Processo 4 não está na memória física
+Substituindo Página 0 do Processo 3 no Frame 2
+Carregando Página 1 do Processo 4 no Frame 2
+Estado da Memória Física:
+| P3-2 | P4-0 | P4-1 | P3-1 |
+
+Tempo t=11:
+[PAGE FAULT] Página 2 do Processo 4 não está na memória física
+Substituindo Página 1 do Processo 3 no Frame 3
+Carregando Página 2 do Processo 4 no Frame 3
+Estado da Memória Física:
+| P3-2 | P4-0 | P4-1 | P4-2 |
+

@@ -1,12 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 //GABRIEL BARROS ALBERTINI - 10419482
 //RAFAEL DE MENEZES ROS - 10417954
 //VINICIUS ALVES MARQUES - 10417880 
 
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define TAMANHO_PAGINA 4
 
@@ -81,41 +79,41 @@ void ler_configuracoes(const char *filename, int *num_frames, int *num_virtual_p
 }
 
 // Função para exibir o estado inicial da memória virtual
-void exibir_memoria_virtual(Processo *processos, int num_processos) {
-    printf("Estado Inicial da Memória Virtual – PID + PÁGINA + LOCALIZACAO\n");
-    printf("--------------- --------------- ---------------\n");
+void exibir_memoria_virtual(FILE *arquivo_saida, Processo *processos, int num_processos) {
+    fprintf(arquivo_saida, "Estado Inicial da Memória Virtual – PID + PÁGINA + LOCALIZACAO\n");
+    fprintf(arquivo_saida, "--------------- --------------- ---------------\n");
     
     for (int i = 0; i < num_processos; i++) {
         for (int j = 0; j < processos[i].num_pages; j++) {
             if (j == 0) {
-                printf("| P%d -%d- %d ", processos[i].process_id, j, processos[i].pages[j].address);
+                fprintf(arquivo_saida, "| P%d -%d- %d ", processos[i].process_id, j, processos[i].pages[j].address);
             } else if (j == 2) {
-                printf("| P%d -%d- %d |\n", processos[i].process_id, j, processos[i].pages[j].address);
+                fprintf(arquivo_saida, "| P%d -%d- %d |\n", processos[i].process_id, j, processos[i].pages[j].address);
             } else {
-                printf("| P%d -%d- %d ", processos[i].process_id, j, processos[i].pages[j].address);
+                fprintf(arquivo_saida, "| P%d -%d- %d ", processos[i].process_id, j, processos[i].pages[j].address);
             }
         }
-        printf("--------------- --------------- ---------------\n");
+        fprintf(arquivo_saida, "--------------- --------------- ---------------\n");
     }
-    printf("\n");
+    fprintf(arquivo_saida, "\n");
 }
 
 // Função para exibir o estado da memória física
-void exibir_memoria_fisica(MemoriaFisicaStruct *mem_fisica, int num_frames) {
-    printf("Estado da Memória Física:\n");
+void exibir_memoria_fisica(FILE *arquivo_saida, MemoriaFisicaStruct *mem_fisica, int num_frames) {
+    fprintf(arquivo_saida, "Estado da Memória Física:\n");
     for (int i = 0; i < num_frames; i++) {
         if (mem_fisica->frames[i].valid) {
-            printf("| P%d-%d ", mem_fisica->frames[i].process_id, mem_fisica->frames[i].page_id);
+            fprintf(arquivo_saida, "| P%d-%d ", mem_fisica->frames[i].process_id, mem_fisica->frames[i].page_id);
         } else {
-            printf("| ---- ");
+            fprintf(arquivo_saida, "| ---- ");
         }
     }
-    printf("|\n");
-    printf("\n");
+    fprintf(arquivo_saida, "|\n");
+    fprintf(arquivo_saida, "\n");
 }
 
 // Função para simular falha de página e carregamento
-int carregar_pagina(MemoriaFisicaStruct *mem_fisica, Processo *processo, int pagina_id, int num_frames) {
+int carregar_pagina(FILE *arquivo_saida, MemoriaFisicaStruct *mem_fisica, Processo *processo, int pagina_id, int num_frames) {
     int frame_index = -1;
     // Encontrar um frame vazio
     for (int i = 0; i < num_frames; i++) {
@@ -128,7 +126,7 @@ int carregar_pagina(MemoriaFisicaStruct *mem_fisica, Processo *processo, int pag
     // Se não houver frames vazios, substitui a página mais antiga (FIFO)
     if (frame_index == -1) {
         frame_index = fifo_dequeue(mem_fisica); // Remove o frame mais antigo
-        printf("Substituindo Página %d do Processo %d no Frame %d\n", 
+        fprintf(arquivo_saida, "Substituindo Página %d do Processo %d no Frame %d\n", 
                mem_fisica->frames[frame_index].page_id, 
                mem_fisica->frames[frame_index].process_id, 
                frame_index);
@@ -146,6 +144,13 @@ int carregar_pagina(MemoriaFisicaStruct *mem_fisica, Processo *processo, int pag
 int main() {
     // Variáveis para armazenar as configurações
     int num_frames, num_virtual_pages, num_processos, tam_processo, pagina_inicial_real, pagina_inicial_virtual;
+
+    // Abrir o arquivo de saída
+    FILE *arquivo_saida = fopen("saida.txt", "w");
+    if (!arquivo_saida) {
+        perror("Erro ao abrir o arquivo de saída");
+        return 1;
+    }
 
     // Lendo as configurações do arquivo
     ler_configuracoes("config.txt", &num_frames, &num_virtual_pages, &num_processos, &tam_processo, &pagina_inicial_real, &pagina_inicial_virtual);
@@ -176,15 +181,15 @@ int main() {
     }
 
     // Exibindo o estado inicial da memória virtual
-    printf("EXECUÇÃO\n");
-    exibir_memoria_virtual(processos, num_processos);
+    fprintf(arquivo_saida, "EXECUÇÃO\n");
+    exibir_memoria_virtual(arquivo_saida, processos, num_processos);
 
     // Exibindo o estado inicial da memória física
-    printf("Estado Inicial da Memória Real\n");
-    exibir_memoria_fisica(&mem_fisica, num_frames);
+    fprintf(arquivo_saida, "Estado Inicial da Memória Real\n");
+    exibir_memoria_fisica(arquivo_saida, &mem_fisica, num_frames);
 
     // Simulação
-    printf("Inicial da Execução\n");
+    fprintf(arquivo_saida, "Inicial da Execução\n");
 
     // Simulando as falhas de página e carregamento
     int time = 0;
@@ -194,13 +199,13 @@ int main() {
                 break;  // Para a simulação quando o tempo chega a t=8
             }
 
-            printf("Tempo t=%d:\n", time);
-            printf("[PAGE FAULT] Página %d do Processo %d não está na memória física\n", j, i + 1);
+            fprintf(arquivo_saida, "Tempo t=%d:\n", time);
+            fprintf(arquivo_saida, "[PAGE FAULT] Página %d do Processo %d não está na memória física\n", j, i + 1);
 
-            int frame = carregar_pagina(&mem_fisica, &processos[i], j, num_frames);
-            printf("Carregando Página %d do Processo %d no Frame %d\n", j, i + 1, frame);
+            int frame = carregar_pagina(arquivo_saida, &mem_fisica, &processos[i], j, num_frames);
+            fprintf(arquivo_saida, "Carregando Página %d do Processo %d no Frame %d\n", j, i + 1, frame);
 
-            exibir_memoria_fisica(&mem_fisica, num_frames);
+            exibir_memoria_fisica(arquivo_saida, &mem_fisica, num_frames);
             time++;
         }
     }
@@ -211,6 +216,8 @@ int main() {
     }
     free(mem_fisica.frames);
     free(mem_fisica.fifo_queue);
+
+    fclose(arquivo_saida); // Fechar o arquivo de saída
 
     return 0;
 }
